@@ -11,6 +11,8 @@ import sys
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
 from ntcore import NetworkTableInstance, EventFlags
 
+import serverCore as vc
+
 configFile = "/boot/frc.json"
 
 class CameraConfig: pass
@@ -199,4 +201,5 @@ if __name__ == "__main__":
 
     # loop forever
     while True:
-        time.sleep(10)
+        time.sleep(1)
+        vc.visionConsolePrint("Hello World")
