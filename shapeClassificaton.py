@@ -4,7 +4,7 @@ import contours as contourUtil
 from enum import Enum
 
 def classifyShapeFromImage(image):
-    returnShape = Shape.NONE
+    returnShapes = []
 
     img = image
 
@@ -12,7 +12,7 @@ def classifyShapeFromImage(image):
 
     noise_removal = cv2.bilateralFilter(img_gray, 9, 75, 75)
 
-    ret, thresh_image = cv2.threshold(noise_removal, 0, 255, cv2.THRESH_OTSU)
+    thresh_image = cv2.threshold(noise_removal, 0, 255, cv2.THRESH_OTSU)
     canny_image = cv2.Canny(thresh_image, 250, 255)
     canny_image = cv2.convertScaleAbs(canny_image)
 
@@ -25,20 +25,41 @@ def classifyShapeFromImage(image):
         approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
 
         if len(approx) == 6 :
-            returnShape = Shape.CUBE
+            returnShapes.append(ShapeEnum.CUBE)
         elif len(approx) == 7:
-            returnShape = Shape.CUBE
+            returnShapes.append(ShapeEnum.CUBE)
         elif len(approx) == 8:
-            returnShape = Shape.CYLINDER
+            returnShapes.append(ShapeEnum.CYLINDER)
         elif len(approx) > 10:
-            returnShape == Shape.CIRCLE
+            returnShapes.append(ShapeEnum.CIRCLE)
+    
+    boundingBox = contourUtil.findContourBoundingBox(foundContours[0])
+    shapeX = boundingBox[0] + boundingBox[2] // 2
+    shapeY = boundingBox[1] + boundingBox[3] // 2
+    shapeArea = contourUtil.findContourArea(foundContours[0])
 
+    return Shape(contourObj=foundContours[0], shapeID=returnShapes[0], kX=shapeX, kY=shapeY, kA=shapeArea)
 
-
-class Shape(Enum):
+class ShapeEnum(Enum):
     NONE = "not assigned"
     CUBE = "cube"
     CYLINDER = "cyl"
     CIRCLE = "circle"
 
-            
+class Shape:
+    def __init__(self, contourObj, shapeID, kX, kY, kA):
+        self.contourA = contourObj
+        self.shapeName = shapeID
+        self.x = kX
+        self.y = kY
+        self.area = kA
+        return
+    
+    def getShape(self):
+        return self.shapeName
+    
+    def getCenter(self):
+        return (self.kX, self.kY)
+    
+    def getBoundingBox(self):
+        return contourUtil.findContourBoundingBox(self.contourA)
