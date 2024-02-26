@@ -3,7 +3,7 @@ import numpy as np
 import contours as contourUtil
 from enum import Enum
 
-def classifyShapeFromImage(image):
+def classifyShapeFromImage(image, num):
     returnShapes = []
 
     img = image
@@ -55,6 +55,9 @@ class Shape:
         self.area = kA
         return
     
+    def getContour(self):
+        return self.contourA
+
     def getShape(self):
         return self.shapeName
     

@@ -202,4 +202,5 @@ if __name__ == "__main__":
     # loop forever
     while True:
         time.sleep(1)
-        vc.processStream(CameraServer.getVideo())
+        visionServer = vc(1)
+        visionServer.processStream(CameraServer.getVideo())

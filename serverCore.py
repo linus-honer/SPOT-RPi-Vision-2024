@@ -7,19 +7,41 @@ import numpy as np
 from cscore.imagewriter import ImageWriter
 from shapeClassificaton import *
 
-class VisionServer:
+class ServerCore:
     '''Base class for the VisionServer'''
 
-def visionConsolePrint(message):
-    print(message)
+    def __init__(self, maxDetect):
+        self.notes = []
+        self.otherShapes = []
+        self.maxDetect = maxDetect
 
-def processStream(input_stream):
-    notes = []
+    def visionConsolePrint(message):
+        print(message)
 
-    img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
-    inputImg = input_stream.grabFrame(img)
+    def processStream(self, input_stream):
+        self.notes = []
+        self.otherShapes = []
 
-    biggestShape = classifyShapeFromImage(inputImg)
+        img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
+        inputImg = input_stream.grabFrame(img)
 
-    if biggestShape.getShape == ShapeEnum.CIRCLE:
-        notes.append(biggestShape)
+        biggestShape = classifyShapeFromImage(inputImg, self.maxDetect)
+
+        if biggestShape.getShape == ShapeEnum.CIRCLE:
+            self.notes.append(biggestShape)
+        else:
+            self.otherShapes.append(biggestShape)
+    
+    def validNote(self):
+        if self.notes.count > 0:
+            return True
+        return False
+    
+    def getNoteContour(self, index):
+        return self.notes[index].getContour()
+
+    def getNoteCenter(self, index):
+        return self.notes[index].getCenter()
+    
+    def getNoteBoundingBox(self, index):
+        return self.notes[index].getBoundingBox()
