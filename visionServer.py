@@ -11,7 +11,9 @@ import sys
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
 from ntcore import NetworkTableInstance, EventFlags
 
-import serverCore as vc
+from serverCore import ServerCore as vc
+
+import numpy as np
 
 configFile = "/boot/frc.json"
 
@@ -202,5 +204,14 @@ if __name__ == "__main__":
     # loop forever
     while True:
         time.sleep(1)
+        img = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
+        imgB, img = CameraServer.getVideo().grabFrame(img)
         visionServer = vc(1)
-        visionServer.processStream(CameraServer.getVideo())
+        visionServer.processStream(imgB)
+        if visionServer.detected:
+            if visionServer.validNote:
+                visionServer.visionConsolePrint("Note Center: " + visionServer.getNoteCenter)
+            else:
+                visionServer.visionConsolePrint("Shape Center: " + visionServer.getShapeCenter)
+        else:
+            visionServer.visionConsolePrint("No Shape Detected")

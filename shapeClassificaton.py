@@ -6,9 +6,7 @@ from enum import Enum
 def classifyShapeFromImage(image, num):
     returnShapes = []
 
-    img = image
-
-    img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
     noise_removal = cv2.bilateralFilter(img_gray, 9, 75, 75)
 
@@ -20,7 +18,7 @@ def classifyShapeFromImage(image, num):
     dilated_image = cv2.dilate(canny_image, kernel, iterations=1)
     foundContours, h = contourUtil.findContours(dilated_image)
     foundContours = contourUtil.sortContoursByArea(foundContours, True)
-    pt = (180, 3 * img.shape[0] // 4)
+    pt = (180, 3 * image.shape[0] // 4)
     for cnt in foundContours:
         approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
 

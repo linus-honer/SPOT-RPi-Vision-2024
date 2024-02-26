@@ -18,12 +18,10 @@ class ServerCore:
     def visionConsolePrint(message):
         print(message)
 
-    def processStream(self, input_stream):
+    def processStream(self, inputImg):
+
         self.notes = []
         self.otherShapes = []
-
-        img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
-        inputImg = input_stream.grabFrame(img)
 
         biggestShape = classifyShapeFromImage(inputImg, self.maxDetect)
 
@@ -37,6 +35,12 @@ class ServerCore:
             return True
         return False
     
+    def detected(self):
+        if self.notes.count > 0:
+            if self.otherShapes.count > 0:
+                return True
+        return False
+    
     def getNoteContour(self, index):
         return self.notes[index].getContour()
 
@@ -45,3 +49,12 @@ class ServerCore:
     
     def getNoteBoundingBox(self, index):
         return self.notes[index].getBoundingBox()
+
+    def getShapeName(self, index):
+        return self.otherShapes[index].getShape()
+    
+    def getShapeCenter(self, index):
+        return self.otherShapes[index].getCenter()
+    
+    def getShapeBoundingBox(self, index):
+        return self.getNoteBoundingBox()
